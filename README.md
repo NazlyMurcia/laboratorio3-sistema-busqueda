@@ -123,10 +123,14 @@ pip install -r requirements.txt
 # 4. Correr el experimento (genera resultados/resultados_experimento.csv)
 python -m src.experimento
 
-# 5. Generar las gráficas a partir del CSV (no vuelve a correr el experimento)
+# 5. (Opcional) Revisar los resultados crudos antes de graficar
+notepad resultados\resultados_experimento.csv      # En Windows
+# En Mac/Linux: open resultados/resultados_experimento.csv (o cualquier editor de texto)
+
+# 6. Generar las gráficas a partir del CSV (no vuelve a correr el experimento)
 python -m src.graficas
 
-# 6. (Opcional) Correr la demo interactiva
+# 7. (Opcional) Correr la demo interactiva
 python -m demo.demo_interactiva
 ```
 
@@ -149,6 +153,13 @@ Datos completos en `resultados/resultados_experimento.csv`.
 
 *Izquierda: escala lineal (M=100). Derecha: misma data en escala log-log, donde
 una pendiente de ~1 indica O(n) y una curva casi plana indica O(log n).*
+
+![Escalabilidad con M=500: tiempo de búsqueda vs. N, comparando Lista, ABB y B+ bajo inserción ordenada y aleatoria](resultados/graficas/escalabilidad_m500.png)
+
+*Misma comparación que la gráfica anterior, pero con M=500 búsquedas por
+corrida en vez de 100 — el patrón de escalamiento se mantiene consistente
+independientemente del valor de M, lo que respalda que la tendencia
+observada no es un artefacto de haber elegido un M particular.*
 
 ### Tabla resumen — tiempo de búsqueda (M=100, 10 repeticiones)
 
@@ -395,28 +406,36 @@ entregar este trabajo:
 | Limitaciones | Sección 9 |
 | Cómo reproducir el experimento | Sección 5 |
 
-**Preguntas que probablemente hagan en vivo, con respuesta corta lista:**
+**Algunas respuestas que tengo preparadas para la sustentación:**
 
-- *"¿Por qué el ABB a veces es más lento que una lista?"* → Cuando se
-  inserta en orden ascendente, el árbol se degenera (altura = N), perdiendo
-  toda ventaja teórica. Ver sección 7.
-- *"¿Por qué no llegaste a 1 segundo con el B+?"* → Porque B+ es O(log n)
-  con una base alta; llegar a 1s requeriría un N poco práctico. Ver
-  limitación en sección 9.
-- *"¿Cómo sabes que tu código funciona bien?"* → Verifiqué que
-  `listar_en_orden()` de las tres estructuras da resultados idénticos
-  entre sí y coincide con `sorted()` de Python.
-- *"¿Por qué empezaste con Colab si al final no se usó para medir?"* →
-  Colab sirvió como etapa exploratoria para entender el problema con una
-  estructura simple (lista) antes de implementar las tres completas; las
-  mediciones oficiales se hicieron en un entorno local, siguiendo la
-  recomendación de evitar la variabilidad de entornos compartidos.
-- *"¿Qué parte hizo la IA y qué parte hiciste tú?"* → La IA ayudó a
-  generar el código base y a estructurar el análisis; yo verifiqué cada
-  resultado, corrí los experimentos en mi propia máquina, diagnostiqué y
-  corregí los problemas de rendimiento que surgieron (ver el proceso de
-  depuración en sección 10), y redacté la interpretación final con los
-  números reales obtenidos.
+Si preguntan por qué el ABB a veces resultó más lento que la lista, la
+explicación está en cómo se insertaron los datos: cuando los IDs entran en
+orden ascendente, el árbol se degenera — cada nodo termina con un solo
+hijo, la altura se vuelve igual a N, y ahí se pierde toda la ventaja
+teórica (está desarrollado en la sección 7).
+
+Sobre por qué el B+ nunca llegó a 1 segundo: es justamente porque es
+O(log n) con una base de ramificación alta, así que crece muy lento.
+Llegar a 1 segundo habría necesitado un N poco realista para este
+experimento (lo dejo documentado como limitación en la sección 9).
+
+Para la pregunta de cómo sé que el código funciona bien, verifiqué que
+`listar_en_orden()` de las tres estructuras diera exactamente el mismo
+resultado entre sí, y que coincidiera con lo que da `sorted()` de Python
+sobre los mismos datos.
+
+Si preguntan por qué arranqué en Colab si al final no se usó para medir:
+esa primera parte fue para entender el problema con algo simple (una
+lista) antes de meterme con ABB y B+. Las mediciones que sí cuentan para
+el informe las hice en un entorno local, porque Colab tiene demasiada
+variabilidad para medir tiempos con confianza.
+
+Y sobre qué hizo la IA y qué hice yo: la IA me ayudó a generar el código
+base y a pensar la estructura del análisis, pero yo corrí los
+experimentos en mi propia máquina, me encontré con el problema de que el
+ABB degenerado tardaba demasiado en construirse (lo cuento en la sección
+10), lo diagnostiqué y lo corregí, y escribí la interpretación final con
+los números que realmente obtuve.
 
 ## Estructura del repositorio
 
